@@ -1,4 +1,11 @@
 {
     "root": "docs",
-    "language": "zh"
+    "language": "zh",
+    "plugins": ["page-treeview"],
+    "pluginsConfig": {
+        "page-treview": {
+            "style": "markdown",
+            "copyright": "Copyright &#169; aleen42"
+        }
+    }
 }
