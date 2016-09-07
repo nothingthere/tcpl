@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 struct range {
-  double min;  /*最小值*/
-  double max;  /*最大值*/
-  double umax; /*无符号最大值*/
+  long double min;  /*最小值*/
+  long double max;  /*最大值*/
+  long double umax; /*无符号最大值*/
 };
 
 struct range CHAR_RANGE;
@@ -55,33 +55,33 @@ int main(int argc, char const *argv[]) {
 
 void show_range(struct range range, char *msg) {
   printf("%s：\n", msg);
-  printf("有符号取值范围：%.0f --- %.0f\n", range.min, range.max);
-  printf("无符号取值范围：0 --- %.0f\n", range.umax);
+  printf("有符号取值范围：%.0Lf --- %.0Lf\n", range.min, range.max);
+  printf("无符号取值范围：0 --- %.0Lf\n", range.umax);
 }
 
 void show_char_range(void) {
   printf("\n字符型：\n");
   show_range(sys_char_range(), "系统定义");
-  handle_char_range();
+  handle_char_range2();
   show_range(CHAR_RANGE, "手动计算");
 }
 void show_short_range(void) {
   printf("\n短整型：\n");
   show_range(sys_short_range(), "系统定义");
-  handle_short_range();
+  handle_short_range2();
   show_range(SHORT_RANGE, "手动计算");
 }
 void show_int_range(void) {
   printf("\n整型\n");
   show_range(sys_int_range(), "系统定义");
-  handle_int_range();
+  handle_int_range2();
   show_range(INT_RANGE, "手动计算");
 }
 //
 void show_long_range(void) {
   printf("\n长整型\n");
   show_range(sys_long_range(), "系统定义");
-  handle_long_range();
+  handle_long_range2();
   show_range(LONG_RANGE, "手动计算");
 }
 
@@ -128,12 +128,12 @@ void handle_int_range2(void) {
 }
 
 void handle_long_range2(void) {
-  double min, max, umax;
+  long double min, max, umax;
   long size = sizeof(long) * CHAR_BIT;
   // printf("%ld\n", size);
   /*数字常量默认的类型为整型：int*/
   min = (long)(1l << (size - 1));
-  max = (long)((1l << (size - 1)) - 1);
+  max = (long)((1l << (size - 1)) + 1);
   umax = (unsigned long)(~0);
   LONG_RANGE.min = min;
   LONG_RANGE.max = max;
@@ -147,7 +147,7 @@ void handle_long_range2(void) {
 1.
 将各类型取值范围声明为全局变量，计算后缓存
 2.
-位数多的类型，利用位数少的类型的计算结果，避免重复计算，如int类型利用short类型的计算结果。注意：为防止相邻类型（如short和int）位数一样，利用低类型的结果时，最大值需-1，最小值需+1。
+位数多的类型，利用位数���的类型的计算结果，避免重复计算，如int类型利用short类型的计算结果。注意：为防止相邻类型（如short和int）位数一样，利用低类型的结果时，最大值需-1，最小值需+1。
 */
 /*计算字符型*/
 struct range sys_char_range(void) {

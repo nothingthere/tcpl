@@ -67,7 +67,7 @@ int main(int argc, char const *argv[]) {
   printf("\n长整型long int：\n");
   printf("长整型最大取值：%ld\n", LONG_MAX);
   printf("长整型最小取值：%ld\n", LONG_MIN);
-  printf("长整型不带符号最大取值：%uld\n", ULONG_MAX); //??
+  printf("长整型不带符号最大取值：%ul\n", ULONG_MAX); //??
 
   return 0;
 }
