@@ -1,4 +1,5 @@
 _book/
 node_modules/
 docs/ex/a.out
+docs/ex/test*
 code/
