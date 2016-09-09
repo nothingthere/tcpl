@@ -33,4 +33,3 @@
 -   [stdlib.h](lib/stdlib.md)
 -   [string.h](lib/string.md)
 -   [time.h](lib/time.md)
-    /time.md)
