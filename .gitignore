@@ -1,5 +1,5 @@
 _book/
 node_modules/
-docs/ex/a.out
+**\a.out
 docs/ex/test*
-code/
+#code/
