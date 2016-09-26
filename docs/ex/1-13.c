@@ -19,15 +19,15 @@ int main(int argc, char const *argv[]) {
 
   // 循环统计
   while ((c = getchar()) != EOF) {
-    if (c == ' ' || c == '\t' || c == '\n') {
+    if (c == ' ' || c == '\t' || c == '\n') { //不在单词中
       state = OUT;
       words[len]++;
       total++;
-      len = 0; /*重置长度*/
-    } else if (state == OUT) {
+      len = 0;                 /*重置长度*/
+    } else if (state == OUT) { //开始进入单词
       state = IN;
       len++;
-    } else {
+    } else { //在单词中
       len++;
     }
   }

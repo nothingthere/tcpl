@@ -16,7 +16,19 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 
-void shellsort(int v[], int n) {}
+void shellsort(int v[], int n) {
+  int gap, i, j;
+  int temp;
+  for (gap = n >> 1; gap >= 1; gap >>= 1) {
+    for (i = gap; i < n; i++) {
+      temp = v[i];
+      for (j = i - gap; j >= 0 && v[j] > temp; j -= gap) {
+        v[j + gap] = v[j];
+      }
+      v[j + gap] = temp;
+    }
+  }
+}
 
 void print_arr(int v[], int n, char msg[]) {
   printf("\n%s：\n", msg);

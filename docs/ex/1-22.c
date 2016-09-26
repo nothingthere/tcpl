@@ -52,7 +52,7 @@ void fold2(char line[], int column) {
   }
 }
 
-/*日了够啦，下面我写的简直太复杂了*/
+/*日了狗啦，下面我写的简直太复杂了*/
 void print_buffer(char buffer[], int n) {
   int i;
   for (i = 0; i < n; i++) {

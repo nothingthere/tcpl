@@ -1,5 +1,6 @@
 _book/
 node_modules/
 **\a.out
+**\*.h.gch
 docs/ex/test*
 #code/

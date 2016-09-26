@@ -4,30 +4,30 @@
 
 ## 字符变量char（8Char）
 
--   CHAR_BIT：一个字符所占位数。8
--   CHAR_MAX：字符变量的最大取值。127
--   CHAR_MIN：字符变量的最小取值。-128
--   UCHAR_MAX：字符变量不带符号的最大取值。255
--   SCHAR_MAX：字符变量带符号的最大取值。+127
--   SCHAR_MIN：字符变量带符号的最小取值。-128
+- CHAR_BIT：一个字符所占位数。8
+- CHAR_MAX：字符变量的最大取值。127
+- CHAR_MIN：字符变量的最小取值。-128
+- UCHAR_MAX：字符变量不带符号的最大取值。255
+- SCHAR_MAX：字符变量带符号的最大取值。+127
+- SCHAR_MIN：字符变量带符号的最小取值。-128
 
 ## 短整型short int（16Short）
 
--   SHRT_MAX：短整型大取值。32767
--   SHRT_MIN：短整型小取值。-32768
--   USHRT_MAX：短整型不带符号的最大值。65535
+- SHRT_MAX：短整型大取值。32767
+- SHRT_MIN：短整型小取值。-32768
+- USHRT_MAX：短整型不带符号的最大值。65535
 
 ## 整型变量int（32Int）
 
--   INT_MAX：整型变量最大值。2147483647（21亿...）
--   INT_MIN：整型变量最小值。-2147483648
--   UINT_MAX：整型不带符号的最大取值。4294967295
+- INT_MAX：整型变量最大值。2147483647（21亿...）
+- INT_MIN：整型变量最小值。-2147483648
+- UINT_MAX：整型不带符号的最大取值。4294967295
 
 ## 长整型long int（64Long）
 
--   LONG_MAX：长整型最大取值。9223372036854775807
--   LONG_MIN：长整型最小取值。-9223372036854775808
--   ULONG_MAX：长整型不带符号最大取值。18446744073709551615
+- LONG_MAX：长整型最大取值。9223372036854775807
+- LONG_MIN：长整型最小取值。-9223372036854775808
+- ULONG_MAX：长整型不带符号最大取值。18446744073709551615
 
 ## 测试
 
@@ -36,10 +36,10 @@
 #include <stdio.h>
 
 int main(int argc, char const *argv[]) {
-	printf("char字节数：%ld\n", sizeof(char));
-	printf("short字节数：%ld\n", sizeof(short));
-	printf("int字节数：%ld\n", sizeof(int));
-	printf("long字节数：%ld\n", sizeof(long));
+    printf("char字节数：%ld\n", sizeof(char));
+    printf("short字节数：%ld\n", sizeof(short));
+    printf("int字节数：%ld\n", sizeof(int));
+    printf("long字节数：%ld\n", sizeof(long));
 
   printf("\n字符型字节：%ld\n", sizeof(char));
   printf("短整型字节：%ld\n", sizeof(short int));

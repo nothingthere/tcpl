@@ -39,17 +39,24 @@ int get_line(char line[]) {
 void tail_trim(char line[]) {
   int n;
   char c;
-  for (n = str_len(line) - 1; n >= 0; n--) {
+  for (n = str_len(line) - 2; n >= 0; n--) { //从换行符前面一个字符开始
     c = line[n];
-    if (c != ' ' && c != '\t' && c != '\n') {
+    if (c != ' ' && c != '\t') {
       break;
     }
   }
-  // 如果是空行，n为-1；
-  if (0) { /*不是空行*/
+
+  if (n == -1) { //如果是空行
+    line[0] = '\0';
+  } else {
     line[n + 1] = '\n';
     line[n + 2] = '\0';
-  } else { /*空行*/
-    line[n + 1] = '\0';
   }
+  // 如果是空行，n为-1；
+  // if (n < 0) { /*不是空行*/
+  //   line[n + 1] = '\n';
+  //   line[n + 2] = '\0';
+  // } else { /*空行*/
+  //   line[n + 1] = '\0';
+  // }
 }

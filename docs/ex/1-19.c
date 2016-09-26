@@ -26,9 +26,10 @@ void str_reverse(char line[]) {
   }
 
   for (i = 0; i < j; i++, j--) {
-    c = line[i];
-    line[i] = line[j];
-    line[j] = c;
+    // c = line[i];
+    // line[i] = line[j];
+    // line[j] = c;
+    line[i] ^= line[j] ^= line[i] ^= line[j];
   }
 }
 

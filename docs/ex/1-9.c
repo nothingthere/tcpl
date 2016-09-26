@@ -44,7 +44,7 @@ int mai2(int argc, char const *argv[]) {
 }
 
 /*
-当当前字符为空字符时，输出，并“吃掉"紧随的所有空字符
+当前字符为空字符时，输出，并“吃掉"紧随的所有空字符
 */
 int main(int argc, char const *argv[]) {
   int c;

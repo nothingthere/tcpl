@@ -1,3 +1,5 @@
+/*计算个类型取值范围*/
+
 /*代码重复太多，应该可以使用宏，将代码简化*/
 
 #include <float.h>
@@ -20,7 +22,6 @@ void show_range(struct range, char *msg);
 
 /*字符型系统和手动计算取值范围*/
 struct range sys_char_range(void);
-void handle_char_range(void);
 void handle_char_range(void);
 void handle_char_range2(void);
 

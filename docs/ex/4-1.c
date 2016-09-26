@@ -25,7 +25,7 @@ int main(int argc, char const *argv[]) {
   while (get_line(line, MAX_LINE) > 0) {
     pos = str_index(line, pattern);
     if (pos >= 0) {
-      printf("%d @ %s\n", pos, line);
+      printf("@%d： %s\n", pos, line);
     }
   }
   // printf("%s\n", line);
@@ -39,10 +39,10 @@ int str_index(char source[], char pattern[]) {
   int i, j, k;
   for (i = source_len - 1; i >= pattern_len - 1; i--) {
     for (j = i, k = pattern_len - 1; k >= 0 && pattern[k] == source[j];
-         j--, k--) {
-      if (k == 0) {
-        return j;
-      }
+         j--, k--)
+      ;
+    if (k == -1) {
+      return j;
     }
   }
   return -1;
