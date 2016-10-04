@@ -21,6 +21,7 @@ int get_line(char *line, int lim) {
 
   if (c == '\n') {
     *line++ = c;
+    i++;
   }
   *line = '\0';
   return i;

@@ -104,9 +104,9 @@ int getop(char *s) {
   // 小数点
   // 返回
   *s = '\0';
-  if (c != EOF) {
-    ungetch(c);
-  }
+  // if (c != EOF) { //????
+  ungetch(c);
+  // }
   return NUMBER;
 }
 
@@ -133,7 +133,11 @@ int getop2(char s[]) {
   }
   s[i] = '\0';
   if (c != EOF) {
+    printf("ungetch\n");
     ungetch(c);
+  }
+  if (c == EOF) {
+    printf("end\n");
   }
   return NUMBER;
 }

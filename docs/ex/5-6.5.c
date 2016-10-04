@@ -31,6 +31,7 @@ int str_index(char *s, char *t) {
   int i;
   char *tmp_t;
   char *tmp_s;
+  // t 每次恢复原来位置，s每次向前推进1
   for (i = 0, tmp_t = t, tmp_s = s; *s != '\0'; i++, t = tmp_t, s = ++tmp_s) {
     while (*t != '\0' && *t == *s) {
       /*不使用*t++ == *s++的原因为，如果不等还是会自增*/

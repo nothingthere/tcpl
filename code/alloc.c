@@ -1,6 +1,6 @@
 #define ALLOCSIZE 10000 /*最大可用空间*/
 static char allocbuf[ALLOCSIZE];
-static char *allocp;
+static char *allocp = allocbuf;
 
 char *alloc(int n) {
   if (allocbuf + ALLOCSIZE - allocp >= n) {
