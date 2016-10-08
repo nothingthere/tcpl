@@ -24,7 +24,7 @@ int binsearch(char *, struct key *, int);
 int main(int argc, char const *argv[]) {
   int n;
   char word[MAXWORD];
-
+  // printf("%lu\n", NKEYS);
   // 读取并计数
   while (getword(word, MAXWORD) != EOF) {
     if (isalpha(word[0]))
