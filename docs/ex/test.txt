@@ -1,4 +1,2 @@
-a
-C
-A,,,
-B
+const void *comp()
+void *comp()

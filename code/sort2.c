@@ -58,7 +58,17 @@ void qsortlines(void *v[], int left, int right,
   qsortlines(v, last + 1, right, comp);
 }
 
-int numcmp(const char *s, const char *t) { return atof(s) - atof(t); }
+#include <stdlib.h>
+int numcmp(const char *s, const char *t) {
+  double val1 = atof(s);
+  double val2 = atof(t);
+  if (val1 < val2)
+    return -1;
+  else if (val1 > val2)
+    return 1;
+  else
+    return 1;
+}
 
 void swap(void *v[], int i, int j) {
   void *tmp;
