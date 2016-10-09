@@ -15,6 +15,7 @@ char *kewords[] = {"__dir",    "auto",     "break",    "case",   "char",
 #define QUOTE '"'
 #define UNDESCORE '_'
 #define SLASH '/'
+#define ASTERISK '*'
 
 struct key {
   char *word;
@@ -91,9 +92,6 @@ int getword(char *word, int lim) {
   if (c != EOF) {
     *word++ = c;
   }
-  // 跳过字符串常量
-  // 跳过注释
-  // 跳过预处理命令
 
   if (!(isalpha(c) || (c == SHARP) || (c == QUOTE) || (c == UNDESCORE) ||
         (c == SLASH))) {
@@ -113,7 +111,9 @@ int getword(char *word, int lim) {
  一个双引号可能到下一个单引号结束："...."
  可能为字符双引号 '"'
     如果上个字符为单引号，则返回此双引号
-
+可能是多行注释
+  读取到下一个※为止，如果再下一个为斜线，则重新读取，
+    如果不是，则ungetch('/')和ungetch('*')，再重新读取
  字符串常量不能跨行书写
 
 */
@@ -131,9 +131,22 @@ int getword(char *word, int lim) {
   case SLASH:
     c = getch();
     // printf("%c\n", c);
-    if (c == SLASH) { /*是注释*/
+    if (c == SLASH) { /*是单行注释*/
       while (getch() != '\n')
         ;
+      *--word = '\0';
+      return getword(word, lim);
+    } else if (c == ASTERISK) { /*多行注释*/
+      while (getch() != ASTERISK)
+        ;
+      c = getch();
+      if (c == SLASH) { /*找到多行注释结尾*/
+
+      } else { /*没到多行注释结尾*/
+        ungetch(SLASH);
+        ungetch(ASTERISK);
+        ungetch(c);
+      }
       *--word = '\0';
       return getword(word, lim);
     } else { /*不是注释*/
@@ -155,7 +168,7 @@ int getword(char *word, int lim) {
   return word[0];
 }
 
-#define BUFFSIZE 1
+#define BUFFSIZE 10
 char buff[BUFFSIZE];
 char *buffp = buff;
 int getch(void) { return buffp > buff ? *--buffp : getchar(); }
