@@ -20,8 +20,6 @@ typedef struct key *Keyptr;
 #define NKEYS sizeof(keytab) / sizeof(keytab[0])
 #define MAXWORD 100
 
-size_t x = 100;
-
 Keyptr binsearch(char *, Keyptr, int);
 int getword(char *, int);
 
@@ -45,7 +43,7 @@ int main(int argc, char const *argv[]) {
 
 Keyptr binsearch(char *word, Keyptr tab, int n) {
   Keyptr low = tab;
-  Keyptr high = tab + n;
+  Keyptr high = tab + n - 1;
   Keyptr mid;
   int cond;
   while (low <= high) {
@@ -126,7 +124,6 @@ int getword(char *word, int lim) {
     break;
   default: /*为字母或下划线*/
     for (; --lim > 0; word++) {
-      // printf("%s\n", "qdw");
       if (!(isalnum(*word = getch()) || *word == UNDERSCORE)) {
         ungetch(*word);
         break;

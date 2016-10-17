@@ -2,6 +2,7 @@
 改进getword函数，使其支持下划线、字符串常量、注释和预处理行。
 */
 
+#include <ctype.h>
 #include <stdio.h>
 // #include <stddef.h>
 // size_t a = 1000;
@@ -10,6 +11,7 @@ char *kewords[] = {"__dir",    "auto",     "break",    "case",   "char",
                    "ifndef",   "include",  "return",   "size_t", "sizeof",
                    "unsigned", "void",     "volatile", "while"};
 #define KEYSLEN sizeof(kewords) / sizeof(kewords[0])
+// #define x 1
 
 #define SHARP '#'
 #define QUOTE '"'
@@ -54,7 +56,8 @@ int main(int argc, char const *argv[]) {
   //
   while (getword(word, MAXLEN) != EOF)
     // printf("%s\n", word);
-    train_keytab(word);
+    if (isalpha(word[0]))
+      train_keytab(word);
   //
   print_keytab();
   return 0;
@@ -78,8 +81,6 @@ int binsearch(char *word, struct key tab[], int n) {
   }
   return -1;
 }
-
-#include <ctype.h>
 
 int getword(char *word, int lim) {
   int getch(void);
@@ -150,6 +151,7 @@ int getword(char *word, int lim) {
       *--word = '\0';
       return getword(word, lim);
     } else { /*不是注释*/
+      // ungetch(c);
       *word = '\0';
       return c;
     }
