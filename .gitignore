@@ -4,4 +4,7 @@ node_modules/
 **\*.h.gch
 **\emma2.txt
 docs/ex/test*
+docs/ex/lower
+docs/ex/upper
+code/test*
 #code/
