@@ -140,6 +140,7 @@ char buff[BUFFSIZE];
 char *buffp = buff;
 
 int getch(void) { return buffp > buff ? *--buffp : getchar(); }
+
 void ungetch(int c) {
   if (buffp < buff + BUFFSIZE) {
     *buffp++ = c;

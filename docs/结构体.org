@@ -1,0 +1,796 @@
+# Author: Claudio <3261958605@qq.com>
+# Created: 2017-07-14 19:37:56
+# Commentary:
+#+TITLE: 结构体
+
+结构体是一个或多个变量的集合，变量可以是不同类型，集合后赋予单独名字方
+便操作。特别是在大型程序里，结构体可将复杂的数据集合到一起，使这些数据
+作为一个单独单元操作。
+
+一个使用结构体传统的例子是工资单记录：一条员工信息可包含名字、住址、身
+份证号、工资等多条信息。其中的一些信息本身也可以是结构体，如名字可分为
+姓和名。另一个例子就是描述图形：一个点由两个坐标组成，一个矩形由两个点
+组成。
+
+结构体可复制，赋值，作为函数参数，以及作为函数返回值。同自动变量数组一
+样，作为自动变量的结构体也可初始化。
+
+*  结构体基础
+
+   下面创建几个描述图形的结构体。图形基础是点，一个点由x和y坐标组成，
+   且都为int型。对应的结构体声明为：
+
+   #+BEGIN_SRC c :session
+     struct point {
+       int x;
+       int y;
+     }
+   #+END_SRC
+
+   声明结构体使用关键字`struct`，声明内容放在大括号`{}`内，以分号`;`结
+   尾。struct关键字后可跟/可不跟_结构标签_（如上面的point）。结构体标
+   签可用于结构体数据定义简写，  *标签实质就是替换大括号内的内容* 。
+
+   结构体内部的变量称为_成员_。结构体成员、标签和普通变量可同名，上下
+   文可区分。不同的结构体内成员可同名，不过最好在关系相当紧密的结构体
+   内才使用相同的成员名。
+
+   结构体声明实质是定义一种类型。同普通变量一样，大括号后可跟一个或多
+   个变量名。所以`strct {...}x, y, z;`同`int x, y, z`在形式上相同，即
+   声明x、y和z变量并分配内存。
+
+   后面不跟变量的结构体声明不分配内存，仅描述了一个结构体模板。如果声
+   明结构体的同时声明了标签，则此标签可用于结构体实例定义，如使用上面
+   的point标签定义`struct point pt`。定义了pt是一个struct point结构体
+   类型。
+
+   结构体定义后可立即初始化，各成员初始化值须为常量表达式，如`struct
+   point maxpt = {320, 200};`。结构体自动变量可通过赋值，或返回相应结
+   构体的函数的返回值初始化。
+
+   结构体成员通过点操作`.`符访问，如打印点pt的坐标`printf("(%d,
+   %d)\n", pt.x, pt.y);`，或者计算该点到原点(0,0)间的距离：
+
+   #+BEGIN_SRC c :session
+     #include <math.h>
+     double dist;
+     dist = sqrt(pow((double)pt.x, 2), +pow((double)pt.y, 2))
+   #+END_SRC
+
+   结构体可嵌套。比如用两个点表示矩形的对角，以表示矩形：
+
+   #+BEGIN_SRC c :session
+     struct rect {
+       struct pt1;
+       struct pt1;
+     }
+   #+END_SRC
+
+   则可声明screen为矩形`struct rect screen`，同样利用点操作符访问到
+   screen变量中pt1的x坐标`screen.pt1.x`。
+
+* 结构体和函数
+
+  对结构体合法的操作只有：赋值或复制、使用`&`取地址和访问成员。赋值或复制包括作为函数参数，以及作为函数返回值。_结构体不可比较。_ 结构体可使用一列常量成员初始化；结构体自动变量还可通过赋值初始化。
+
+  下面定义一些操作点和矩形的函数来展示函数结构体操作。至少有3种方式实现函数操作结构体：单独传递成员，传递整个结构体，传递结构体指针。每种都有优缺点。
+
+  第一个函数为makepoint，结构两个int型作为参数，返回point结构体：
+
+  ```c
+  struct point makepoint(int x, int y) {
+  struct point tmp;
+  tmp.x = x;
+  tmp.y = y;
+  return tmp;
+  }
+  ```
+
+  上面参数名和结构体成员名并没有冲突，实际上使用相同名字可强调两者关系。
+
+  makepoint函数可用来动态初始化结构体，或为函数提供结构体参数：
+
+  ```c
+  struct rect screen;
+  struct point middile;
+  struct point makepoint(int, int);
+  screen.pt1 = makepoint(0, 0);
+  screen.pt2 = makepoint(3, 4);
+  middile = makepoint((screen.pt1.x + screen.pt2.x) / 2,
+  (screen.pt1.y + screen.pt2.y) / 2);
+  ```
+
+  下面为一组进行point运算的函数，如：
+
+  ```c
+  struct point addpoint(struct point p1, struct point p2) {
+  p1.x += p2.x;
+  p1.y += p2.y;
+  return p1;
+  }
+  ```
+  
+参数和返回值都是结构体。由于结构体类型也是值传递，所以没使用中间变量，而是使用了增加p1成员值的方法实现了point类型相加。
+
+下一个例子是判断点是否在矩形内，可在左边线和下边线上，但不能在右边线和上边线上：
+
+```c
+int ptinrect(struct point p, struct rect r) {
+  return p.x >= r.pt1.x && p.x < r.pt2.x &&
+    p.y >= r.pt1.y && p.y < r.pt2.y;
+}
+```
+
+不过此函数需pt1应在pt2左下方的基础上。下面这个例子就是返回一个矩形，保证pt1在pt2左下方：
+
+```c
+struct rect canonrect(struct rect r) {
+  struct rect tmp;
+  tmp.pt1.x = min(r.pt1.x, r.pt2.x);
+  tmp.pt1.y = min(r.pt1.y, r.pt2.y);
+
+  tmp.pt2.x = max(r.pt1.x, r.pt2.x);
+  tmp.pt2.y = max(r.pt1.y, r.pt2.y);
+
+  return tmp;
+}
+```
+
+如需为函数传递大型结构体，使用指针比复制整个结构体更有效率。结构体指针定义与普通变量指针定义完全相同。如定义`struct point *pp`，就定义了pp是一个指向struct type类型的指针。同样，如果pp指向一个结构体，则`(*pp).x`和`(*pp).y`就是结构体成员。如：
+
+```javascript
+struct point origin, *pp;
+pp = &origin;
+origin = makepoint(10, 20);
+printf("origin is (%d,%d)\n", (*pp).x, (*pp).y);
+```
+
+结构体指针使用相当频繁，所以C语言提供了通过结构体指针访问成员的简便方法：
+
+```c
+p->memeber-of-structure
+```
+
+所以也可写成：
+
+```c
+printf("origin is (%d,%d)\n", pp->x, pp->y);
+```
+
+`.`和`->`操作符的执行顺序都是从左到右，所以如果有声明`struct rect r, *rp = &r;`，则下面表达式都等价：
+
+```c
+r.pt1.x
+rp->pt1.x
+(r.pt1).x
+(rp->pt1).x
+```
+
+**`.`、`->`、`()`和用于下标的`[]`操作符是优先级最高的操作符。** 所以，如果有声明：
+
+```javascript
+struct {
+  int len;
+  char *str;
+} * p;
+```
+
+则`++p->len`为自增len，而非p，因为其实质为`++(p->len)`。可使用括号改变计算顺序，`(++p)->len`访问len属性前自增p，`(p++)->len`（括号可省）为访问len后自增p。
+
+同样，`*p->str`为获取str所指内容，`*p->str++`为获取str所指内容后自增str（同`*s++`），`(*p->str)++`自增str所指内容，`*p++->str`为获取str所指内容后自增p。
+
+## 结构体数组
+
+下面实现一个统计文本中C关键字的程序。需一个含字符串的数组，还需一个含对应字符串数量的整型数组。一种方法是使用同步数组，如：
+
+```c
+char *keyword[NKEYS];
+int keycount[NEKEYS];
+```
+
+不过，如果是同步数组，最好使用结构体代替，每个关键字及其出现次数为一个结构体：
+
+```javascript
+struct key {
+  char *word;
+  int count;
+} keytab[NKEYS];
+```
+
+声明了key结构体，并定义了keytab为此结构体类型数组，且分配了内存。也可写成：
+
+```javascript
+struct key {
+  char *word;
+  int count;
+};
+
+struct key keytab[NKEYS];
+```
+
+由于keytab所含关键字数量固定，所以可将其设置为外部变量，并在定义时初始化：
+
+```javascript
+struct key {
+  char *word;
+  int count;
+} keytab[] = {{"auto", 0},    {"break", 0},    {"case", 0},
+                     {"char", 0},    {"const", 0},    {"continue", 0},
+                     {"default", 0}, {"int", 0},      {"unsigned", 0},
+                     {"void", 0},    {"volatile", 0}, {"while", 0}};
+```
+
+与普通数组一样，数组元素个数会自动计算。
+
+整个程序的执行过程为使用将定义的getword函数获取下一个单词，然后使用二叉树查找算法判断获取的单词是否存在于keytab内，这就要求初始化keytab时各结构体内关键字需按字母顺序递增排序。
+
+```javascript
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXWORD 100
+
+int main(int argc, char *argv[]) {
+  int n;
+  char word[MAXWORD];
+
+  // 读取并计数
+  while (getword(word, MAXWORD) != EOF) {
+    if (isalpha(word[0]))
+      if ((n = binsearch(word, keytab, NKEYS)) >= 0)
+        keytab[n].count++;
+    // printf("%s\n", word);
+  }
+
+  // 打印结果
+  for (n = 0; n < NKEYS; n++)
+    if (keytab[n].count > 0)
+      printf("%4d %s\n", keytab[n].count, keytab[n].word);
+
+  return 0;
+}
+
+int binsearch(char *word, struct key table[], int n) {
+  int cond;
+  int low, high, mid;
+  low = 0;
+  high = n - 1;
+  while (low <= high) {
+    mid = (low + high) / 2;
+    if ((cond = strcmp(word, table[mid].word)) < 0)
+      high = mid - 1;
+    else if (cond > 0)
+      low = mid + 1;
+    else
+      return mid;
+  }
+  return -1;
+}
+```
+
+NKEYS是keytab中关键字/结构体的数量。可手动计算，不过最可靠的方法还是使用机器，如果keytab中的内容需改变尤需如此。
+
+数组的长度在编译时才确定。数组长度为数组大小除以数组元素大小，所以确定数组长度的方法为：
+
+```c
+size of keytab / size of struct key
+```
+
+C中的一元操作符sizeof可用于计算所有对象的大小。表达式`sizeof object`和`sizeof (type name)`的返回值为表示对象和某个类型所占byte数的整型值。（严格地讲，sizeof返回的是一个unsigned整数，其类型为标准库stddef.h中定义的size_t类型。）。sizeof接受的类型可为int和double等基本类型，也可为通过结构体定义的类型，也可为指针。
+
+此例中，数组长度为为数组大小除以一个元素的大小。此处在#define中计算NKEYS的值：
+
+```c
+#define NKEYS sizeof(keytab) / sizeof(struct key)
+```
+
+还有一种方法就是用数组大小除以一个特定元素大小。（_一般为第一个元素，测试了数组无元素的情况，居然能返回0_）。
+
+```c
+#define NKEYS sizeof(keytab) / sizeof(keytab[0])
+```
+
+sizeof不能用在#if后，因为与处理器不解析类型名。不过可用在#define后，因为预处理器不会计算#define语句。
+
+下面的getword比此程序所需更具通用性？，不过也不复杂。getword函数读取下一个"单词"，此单词可以是由字母开始后跟字母或数字的字符串，可以是一个单独的非空字符。函数返回值是单词的首字母，或EOF，或字符本身。
+
+```javascript
+int getword(char *word, int lim) {
+  int getch(void);
+  void ungetch(int);
+  // char *w = word;
+  int c;
+  while ((c = getch()) == ' ' || c == '\t')
+    ;
+  if (c != EOF) {
+    *word++ = c;
+  }
+  if (!isalpha(c)) { /*可能返回EOF*/
+    *word = '\0';
+    return c;
+  }
+  for (; --lim > 0; word++) {
+    if (!isalnum(*word = getch())) {
+      ungetch(*word);
+      break;
+    }
+  }
+
+  *word = '\0';
+  return word[0];
+}
+```
+
+- [ex6-1](ex/6-1.c)：改进getword函数，使其支持下划线、字符串常量、注释和预处理行。
+
+## 结构体指针
+
+为了演示结构体指针和结构体数组，此节用指针替代数组索引重写上节的C关键字统计程序。
+
+外部变量keytab保持不变，不过main和binsearch需重写：
+
+```javascript
+#define NKEYS sizeof(keytab) / sizeof(keytab[0])
+#define MAXWORD 100
+
+struct key *binsearch(char *, struct key *, int);
+int getword(char *, int);
+
+int main(int argc, char *argv[]) {
+  char word[MAXWORD];
+  struct key *pk;
+  // 读入并统计
+  while (getword(word, MAXWORD) != EOF) {
+    if (isalpha(word[0]))
+      if ((pk = binsearch(word, keytab, NKEYS)) != NULL)
+        pk->count++;
+  }
+
+  // 打印结果
+  for (pk = keytab; pk < keytab + NKEYS; pk++)
+    if (pk->count > 0)
+      printf("%4d %s\n", pk->count, pk->word);
+
+  return 0;
+}
+
+struct key *binsearch(char *word, struct key *tab, int n) {
+  struct key *low = tab;
+  struct key *high = tab + n - 1;
+  struct key *mid;
+  int cond;
+  while (low <= high) {
+    mid = low + (high - low) / 2;
+    if ((cond = strcmp(word, mid->word)) < 0)
+      high = mid - 1;
+    else if (cond > 0)
+      low = mid + 1;
+    else
+      return mid;
+  }
+  return NULL;
+}
+```
+
+有几点需注意。首先，binsearch函数的定义和声明需为返回struct key类型指针，而非int型。如果找到"单词"，返回指针，如未找到则返回NULL。
+
+其次，keytab中的元素现在使用指针访问，所以binsearch函数内部也需改变。low和high的初始化应为分别指向keytab的起始和末尾处。获取中间元素的表达式不能写成：
+
+```c
+mid = (low + high) / 2; /*WRONG*/
+```
+
+而应写成：
+
+```c
+mid = low + (high - low) / 2;
+```
+
+最后，在main函数中历遍keytab的循环应写成：
+
+```c
+for (pk = keytab; pk < keytab + NKEYS; pk++){...}
+```
+
+如果pk指向结构体数组的第一个元素，则pk++会自动计算地址增量，指向下一个数组元素。
+
+一个结构体所占内存大小并不是起所有成员内存大小的总和。由于"对其原则"，结构体内可能有"空洞"，来使整个结构体对其。如果char占1位，int占4位，则结构体：
+
+```c
+struct {
+  char c;
+  int i;
+};
+```
+
+会占8位，而非5位。使用sizeof可正确获取结构体所占内存大小。
+
+## 引用自身的结构体
+
+加入实现一个通用性更强的程序，统计所有单词出现次数。由于单词总量不可预知，不能先对单词排序，也就不能使用二叉树搜索。如果采用线性搜索，会非常耗时（搜索时间随单词增加呈二次方增加？）。
+
+有一种解决方法就是，始终保证单词排序，及发现新单词时将其插入合适位置。但此方法在插入新单词时需移动后面的元素，还是相当耗时。因此，此程序使用_二叉树_结构来实现。
+
+二叉树中，一个"节点（node）"表示一个单词，每个节点含：
+
+- 指向单词的指针
+- 单词出现次数
+- 指向左子节点的指针
+- 指向右子节点的指针
+
+每个节点只能含一个或0个节点。左节点单词比节点单词"小"，右节点单词比节点单词"大"。获取一个单词是，如果与当前节点单词相等，则数量增加1,如果比当前单词小，从左节点搜索，否则从右节点搜索，如果单词不存在则创建一个新节点。此数据为递归模型，实现函数自然也使用递归调用。用结构体表示为：
+
+```javascript
+struct tnode {
+  char *word;
+  int count;
+  struct tnode *left;
+  struct tnode *right;
+};
+```
+
+结构体的成员可为指向本结构体的指针，但不能为结构体本身，所以以上声明合法。
+
+另一种结构体引用自身的变体为两个结构体相互引用，如：
+
+```javascript
+struct t {
+  ...
+  struct s *p;
+};
+
+struct s {
+  ...
+  struct t *p;
+};
+```
+
+虽然数据结构看起来较复杂，但程序的实现却很简单：
+
+```javascript
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAXWORD 100 /*一个单词最大长度*/
+
+struct tnode *addtree(struct tnode *tree, char *word);
+void treeprint(struct tnode *tree);
+int getword(char *word, int lim);
+
+int main(int argc, char *argv[]) {
+  char word[MAXWORD];
+  struct tnode *root = NULL;
+  // 读取病存储单词
+  while (getword(word, MAXWORD) != EOF) {
+    if (isalpha(word[0])) {
+      root = addtree(root, word);
+    }
+  }
+  // 打印单词
+  treeprint(root);
+
+  return 0;
+}
+```
+
+addtree函数为递归函数。每读取一个单词，将其与root节点处的单词比较，如果不等则在节点左子树或右子树上继续调用addtree函数；如果节点单词不存在，则创建新节点。
+
+```javascript
+struct tnode *addtree(struct tnode *tree, char *word) {
+  struct tnode *talloc(void);
+  char *str_dup(char *s);
+
+  int cond;
+  if (tree == NULL) {
+    tree = talloc();
+    tree->word = str_dup(word);
+    tree->count = 1;
+    tree->left = tree->right = NULL;
+
+  } else if ((cond = strcmp(tree->word, word)) == 0) {
+    tree->count++;
+  } else if (cond < 0) {
+    tree->right = addtree(tree->right, word);
+  } else {
+    tree->left = addtree(tree->left, word);
+  }
+  return tree;
+}
+```
+
+节点的内存分配由talloc函数实现，向系统请求一个节点所需大小内存，再将其强制转换为指向节点类型的指针；单词字符串创建利用str_dup函数时也向系统请求相应大小的空间，此内存隐藏，只需使用指向该内存区域的指针：
+
+```javascript
+struct tnode *talloc(void) {
+  return (struct tnode *)malloc(sizeof(struct tnode));
+}
+
+char *str_dup(char *s) {
+  char *p = (char *)malloc(strlen(s) + 1);
+  strcpy(p, s);
+  return p;
+}
+```
+
+treeprint函数先打印所有左子树单词和数量，再打印当前节点单词和数量，最后打印右子树单词和数量。如果对treeprint函数执行顺序感到困惑，可画一个树状结构图模拟。
+
+```javascript
+void treeprint(struct tnode *tree) {
+  if (tree != NULL) {
+    treeprint(tree->left);
+    printf("%4d %s\n", tree->count, tree->word);
+    treeprint(tree->right);
+  }
+}
+```
+
+注意：二叉树结构适用于随机输入的数据。最坏的情况是，如果输入数据本身就是已经排序好，实质相当于线性数据结构。
+
+最后关心一下内存分配问题。及时为不同类型数据分配数据，一个程序最好只有一个内存分配器。如此就面临2个问题：如何满足内存对其原则（如int型需处于偶数地址），如何返回指向不同类型的指针。
+
+实现内存对其可以浪费一部分存储空间的代价实现？，第五章的alloc函数却不能保证。上面程序使用了标准库stdlib.h中的malloc函数实现，此函数返回的指针为void类型，所以可转换为任意类型指针。
+
+当不能获取内存时，malloc会返回NULL。由malloc获取的内存可由free释放。
+
+- [ex6-2](ex/6-2.c)：实现读取C源文件程序，按字母顺序输出每组前6个字母相同的变量名。字符串和注释内的单词不考虑。将6作为命令行参数。
+
+- [ex6-3](ex/6-3.c)：实现程序打印文档中所有单词，每个单词打印在文档中出现的行数。排序无实意单词如"the"和"and"等。
+
+- [ex6-4](ex/6-4.c)：实现程序打印不同单词在文档中出现的次数，按出现次数递减排序，单词前需打印次数。
+
+## 表查找
+
+为更充分展示结构体，本小节实现一个简单的哈希表查找包。此实现一般用于预处理命令宏和编译器的符号表单管理系统。比如，如果碰见宏定义`#define IN 1`，则将IN和其替换内容1存入表单。随后，如果再出现IN，如`state = IN`，则替换为1。
+
+此实现需2个步骤：install(s,t)将名称s和替换内容t计入表单；lookup(s)查找名称s是否存在于表单中，如果存在，返回指针，不存在返回NULL。
+
+采用算法为哈希搜索算法：新添的名称转换为非负整数，作为指针数组的索引。每个数组元素为指向链表起始位置的指针，每个链表中的数据块有相同的哈希值。如果没有名称的哈希值为数组索引，则该索引对应值为NULL。
+
+每个数据块含指向名称的指针，指向替换内容的指针，以及指向下一个数据块的指针。使用NULL可判断链表结束点。
+
+```javascript
+struct nlist {
+  char *name;         /*名称*/
+  char *defn;         /*替换内容*/
+  struct nlist *next; /*下一个*/
+};
+```
+
+指针数组为：
+
+```c
+#define HASHSIZE 101
+struct nlist *hashtable[HASHSIZE]; /*指针表单*/
+```
+
+lookup和install函数都需使用哈希函数hash，将名称字符串的每个字符数值相加在与数组长度求模。此方法不是最好的方法，却即短小又高效：
+
+```javascript
+unsigned hash(char *s) {
+  unsigned hashval;
+  for (hashval = 0; *s != '\0'; s++)
+    hashval = *s + 31 * hashval;/*为啥要乘以31？*/
+  return hashval % HASHSIZE;
+}
+```
+
+使用unsigned的目的是为了生成非负整数，以作为表单索引。
+
+查找过程为先确定哈希值，以找到在表单数组中的索引，如果找到即找到链表起始位置，再在链表上比较字符串寻找。如果找到，返回指向该结构体的指针，否则返回NULL。
+
+```javascript
+struct nlist *lookup(char *name) {
+  struct nlist *p;
+  for (p = hashtable[hash(name)]; p != NULL; p = p->next) {
+    if (strcmp(name, p->name) == 0) {
+      return p;
+    }
+  }
+  return NULL;
+}
+```
+
+其中的for循环是历遍链表的标准结构：
+
+```c
+for (ptr = head; ptr != NULL; ptr = ptr->next) {....}
+```
+
+install函数使用lookup查看名称是否已经存在，如果存在则起定义被替换；如果不存在则创建新的链表结构，**并置于链表起始位置**。若出现任何原因不能获得所需内存，则install函数返回NULL。
+
+```javascript
+struct nlist *install(char *name, char *defn) {
+  struct nlist *p;
+  unsigned hashval;
+
+  if ((p = lookup(name)) == NULL) { /*没有定义过*/
+    p = (struct nlist *)malloc(sizeof(p));
+    if (p == NULL || (p->name = strdup(name)) == NULL)
+      return NULL;
+    hashval = hash(name);
+    p->next = hashtable[hashval];
+    hashtable[hashval] = p;
+  } else { /*已经定义过*/
+    free(p->defn);
+  }
+
+  /*无论是否定义过,都有新的定义值*/
+  if ((p->defn = strdup(defn)) == NULL)
+    return NULL;
+
+  return p;
+}
+```
+
+- [ex6-5](ex/6-5.c):根据lookup和install函数的实现,实现undef(name)函数,从哈希表中删除name定义。
+- [ex6-6](ex/6-6.c):实现简单版本的C程序define功能（不带参数）。提示：使用getch和ungetch。
+
+## 类型定义typedef
+
+使用typedef可创建新的类型名称。如`typedef int Lenght`就创建的Lenght作为int类型的替代名称，任何使用int关键字的地方，如声明、定义和类型转换时都可使用Lenght替代：
+
+```c
+Lenght len, maxlen;
+Lenght *lengths[];
+```
+
+同样，如果有声明`typedef char *String`，则使用String就可替换`char *`表示字符指针，即可用于声明和类型转换：
+
+```c
+String p, lineptr[MAXLINES], alloc(int);
+int strcmp(String, String);
+p = (String)malloc(100);
+```
+
+注意声明时新类型名称的位置处于变量声明时变量相同的位置，不是紧随typedef后。语法上，typedef和extern和static关键字的出现位置一样。_通常情况下，新声明的类型名称一般首字母大写，以示区别。_
+
+使用typedef可将此前出现过的二叉树结构体声明为新类型名：
+
+```javascript
+typedef struct tnode *Treeptr;
+typedef struct tnode {
+  char *word;
+  size_t count;
+  struct tnode *left;
+  struct tnode *right;
+} Treenode;
+```
+
+创建新类型名Treenode（结构体）和Treeptr（指向该结构体的指针）后，talloc函数就可如下定义：
+
+```c
+Treeptr talloc(void) { return (Treeptr)malloc(sizeof(Treenode)); }
+```
+
+必须强调，typedef声明并没有创建新的类型，仅仅是为已存在的类型添加了新名称。使用新名称定义的变量同全写定义的变量性质完全相同。在效果上typedef与#define预处理命令相似，不过typedef由编译器解释，而且有宏定义不具备的能力，如声明函数类型：
+
+```javascript
+typedef int (*PFI)(char *, char *);
+```
+
+创建了新类型名PFI，为有两个字符指针参数，返回整形的函数指针。可使用在如下等声明中：
+
+```c
+PFI numcmp, strcmp;
+```
+
+除简单的代码美观作用外，使用typedef声明还有2大作用：
+
+- **提高程序兼容性**：如果使用typedef声明因环境不同二不同（machine-depenedent）的数据类型，当程序转移时只需更改typedef声明。最常见的例子是使用typedef声明不同的整形？。如标准库中的size_t和ptrdiff_t。
+- **优化程序文档**：如Treeptr的类型比全写的复杂结构体声明更易阅读。
+
+## 共用体（Union）
+
+共用体（union）变量可为大小不同的不同类型对象（不同时间），编译器记录其大小的对齐需求。使用共用体可实现在单个内存区间内操作不同类型的数据，且不需为程序植入兼容信息？。
+
+编译器的符号表单管理器可能就是使用了共用体，假设一个常量可能是int、float或字符指针类型。单个常量需存储在确定类型的变量内，如果不管常量类型，常量占据内存大小相同，且存储在同一位置，则更加便利。使用共用体就能存储多个类型变量中的一个：
+
+```javascript
+union u_tag {
+  int ival;
+  float fval;
+  char *sval;
+} u;
+```
+
+变量u所占内存会足够来存储这3种变量，具体大小由环境决定。可为u赋值其中任何一类值，但访问时需访问最近一次赋值的类型，如果不一致报错信息由环境决定。
+
+共用体成员访问方式与结构体相同：
+
+```txt
+union-name.member
+union-pointer->member
+```
+
+如果使用utype跟踪u当前类型，则有：
+
+```c
+switch (utype) {
+case INT:
+  printf("%d\n", u.ival);
+  break;
+case FLOAT:
+  printf("%f\n", u.fval);
+  break;
+case STRING:
+  printf("\"%s\"\n", u.sval);
+  break;
+default:
+  printf("bad type %d in utype\n", utype);
+}
+```
+
+共用体可存在于结构体和数组内，反之亦然。如果有结构体定义：
+
+```javascript
+struct {
+  char *name;
+  int flags;
+  int utype;
+  union {
+    int ival;
+    float fval;
+    char *sval;
+  } u;
+} symtab[NSYM];
+```
+
+则访问ival的方式为：`symtab[i].u.ival`，获取sval第一个字符的方式为：`*symtab[i].u.sval`或`symtab[i].u.sval[0]`。
+
+共用体结构中每个成员在内存中的都从起始位置开始占据内存，共用体所占内存足够大以存储所有类型，且能满足所有类型的对其需求。
+
+_共用体允许的操作同结构体：所谓一个单元赋值或复制，获取地址，以及访问成员。_
+
+共用体可初始化为第一个成员类型的值，如上u变量可初始化为整型。（本机测试失败！）
+
+参考第八章的内存分配器，使用共用体将一个变量所占内存强制在指定边界内？。
+
+## 位字段（Bit Field）
+
+如果内存使用相当严苛，可将多个对象集中到一个"机器字（machine word）"中。常见的情况就是如编译器的符号管理表单，管理一套单bit的标记。此外，硬件暴露借口通常也要求使用单个字段表示多个对象。
+
+假设编译器管理"单词"，判断变量是否为keyword、extern或/和static，最精简的方式就是将这个信息存储在一个int或char中。
+
+通常的做法是定义一套"mask"，对应相关位数：
+
+```c
+#define KEYWORD 01
+#define EXTERN 02
+#define STATIC 04
+
+char flags = 0;
+```
+
+或：
+
+```c
+enum { KEYWORD, EXTERN, STATIC };
+char flags = 0;
+```
+
+_各数值需为2的次方数。_
+
+如此`flags |= (EXTERN | STATIC);`可打开EXTERN和STATIC对应位；`flags &= ~(EXTERN | STATIC);`关闭EXTERN和STATIC对应位；`if ((flags & (EXTERN | STATIC)) == 0)...`判断这两个位是否同时关闭。
+
+不过，C提供了位字段结构实现了直接操作单个位。称为"字"的单个存储单元内，可有一个或多个**连续**的位字段。如上使用mask操作的"单词表单"可使用3个位字段代替：
+
+```c
+typedef struct {
+  unsigned int is_keyword : 1;
+  unsigned int is_extern : 1;
+  unsigned int is_static : 1;
+} Word;
+
+Word flags;
+```
+
+定义了含3个1-bit位的变量flags。数字"1"表示位字段宽度，使用`unsigned int`保证宽度为非负整数。
+
+单个位字段可使用结构体相似的方式访问：flags.is_keyword、flags.is_extern等。位字段相当于整数，因此具备所有整数的计算能力，所以使用`flags.is_extern = flags.is_static = 1`可打开位，`flags.is_extern = flags.is_static = 0`可关闭位。
+
+几乎所有位字段运算都依赖于环境？。单个位是否会超出一个"字"边界由环境决定。单个位可不命名（j仅有类型，冒号和大小）以作为内间距？。宽度0强制与下一个"字"对其。
+
+位字段从右向左还是从左到右赋值（以is_keyword还是以is_static起始？）由环境决定，依赖某种顺序的实现不可移植。位需声明为int型，为实现兼容性，需明确声明为signed或unsigned。一个位字段结构不是数组，不可访问单个位的地址（~~&flags.is_keyword~~ ），不过可访问整个结构的地址（&flags）。

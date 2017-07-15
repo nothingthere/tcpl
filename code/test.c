@@ -1,1 +1,6 @@
-int main(int argc, char const *argv[]) { return 0; }
+#include<stdio.h>
+
+int main(int argc, char *argv[]){
+  printf("hello, world\n");
+  return 0;
+}

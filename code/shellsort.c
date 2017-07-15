@@ -1,7 +1,7 @@
-/*希尔排序*/
-
+/* 希尔排序 */
 #include <stdio.h>
-
+#define name "claudio"
+name
 void shellsort(int v[], int n);
 void print_arr(int v[], int n, char msg[]);
 
